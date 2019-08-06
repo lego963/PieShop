@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using PieShop.Models;
+using PieShop.ViewModels;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,11 +18,25 @@ namespace PieShop.Controllers
         // GET: /<controller>/
         public IActionResult Index()
         {
-            ViewBag.Title = "Pie overview";
+            var pies = pieRepository.GetAllPies().OrderBy(p => p.Name).ToList();
 
-            var pies = pieRepository.GetAllPies().OrderBy(p => p.Name);
+            var viewModel = new HomeViewModel
+            {
+                Title = "Bethany's Pie Shop",
+                Pies = pies
+            };
 
-            return View();
+            return View(viewModel);
+        }
+
+        public IActionResult Details(int id)
+        {
+            var pie = pieRepository.GetPieById(id);
+            if (pie == null)
+            {
+                return NotFound();
+            }
+            return View(pie);
         }
     }
 }
